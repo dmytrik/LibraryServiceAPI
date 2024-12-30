@@ -218,6 +218,7 @@ cython_debug/
 cmake-build-*/
 
 # Mongo Explorer plugin
+.idea/
 .idea/**/mongoSettings.xml
 
 # File-based project format
