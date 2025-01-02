@@ -5,7 +5,7 @@ description = "Online management system for book borrowings."
 authors = ["dmytro <dmysamo@gmail.com>"]
 readme = "README.md"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.dependencies]
 python = "^3.12.8"
 ruff = "^0.8.4"
 django = "^5.1.4"
