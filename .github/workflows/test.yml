@@ -33,5 +33,6 @@ jobs:
       - name: Run Tests
         env:
           SECRET_KEY: "j+(#!sag4%^ay+oanu&t-&3x@2$!+s%x4u!4%pser4o9)2!ua1"
+          ENVIRONMENT: "local"
         timeout-minutes: 5
         run: poetry run python manage.py test
