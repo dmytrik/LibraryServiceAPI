@@ -28,7 +28,7 @@ jobs:
         run: poetry install
 
       - name: Run Ruff
-        run: ruff check --output-format=github .
+        run: poetry run ruff check --output-format=github .
 
       - name: Run Tests
         timeout-minutes: 5
