@@ -6,9 +6,10 @@ from book.serializers import BookSerializer
 
 class BookViewSet(viewsets.ModelViewSet):
     """
-        ViewSet for handling CRUD operations on the Book model.
-        Provides standard actions like list, create, retrieve, update, and delete.
+    ViewSet for handling CRUD operations on the Book model.
+    Provides standard actions like list, create,
+    retrieve, update, and delete.
     """
 
-    queryset = Book.objects.all()
+    queryset = Book.objects.prefetch_related("borrowings")
     serializer_class = BookSerializer
