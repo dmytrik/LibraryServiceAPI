@@ -3,7 +3,6 @@ from book.models import Book
 
 
 class BookModelTest(TestCase):
-
     def test_book_creation(self):
         """Test the creation of a book with all fields"""
         book = Book.objects.create(
@@ -11,7 +10,7 @@ class BookModelTest(TestCase):
             author="Test Author",
             cover=Book.Cover.SOFT,
             inventory=5,
-            daily_fee=10.00
+            daily_fee=10.00,
         )
 
         self.assertEqual(book.title, "Test Book")
@@ -27,7 +26,7 @@ class BookModelTest(TestCase):
             author="Author 1",
             cover=Book.Cover.SOFT,
             inventory=10,
-            daily_fee=15.00
+            daily_fee=15.00,
         )
 
         with self.assertRaises(Exception):
@@ -36,5 +35,5 @@ class BookModelTest(TestCase):
                 author="Author 2",
                 cover=Book.Cover.HARD,
                 inventory=3,
-                daily_fee=20.00
+                daily_fee=20.00,
             )

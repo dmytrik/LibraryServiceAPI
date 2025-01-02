@@ -4,7 +4,6 @@ from book.models import Book
 
 
 class BookViewSetTest(APITestCase):
-
     def setUp(self):
         """Create a test book entry before tests"""
         self.book = Book.objects.create(
@@ -12,7 +11,7 @@ class BookViewSetTest(APITestCase):
             author="Test Author",
             cover=Book.Cover.SOFT,
             inventory=5,
-            daily_fee=10.00
+            daily_fee=10.00,
         )
 
     def test_create_book(self):
@@ -22,9 +21,11 @@ class BookViewSetTest(APITestCase):
             "author": "New Author",
             "cover": Book.Cover.HARD,
             "inventory": 5,
-            "daily_fee": 12.00
+            "daily_fee": 12.00,
         }
-        response = self.client.post("/api/book-service/books/", data, format="json")
+        response = self.client.post(
+            "/api/book-service/books/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["title"], data["title"])
 
@@ -43,13 +44,17 @@ class BookViewSetTest(APITestCase):
             "cover": self.book.cover,  # Обкладинка залишається незмінною
             "daily_fee": self.book.daily_fee,  # Залишаємо попереднє значення daily_fee
         }
-        response = self.client.put(f"/api/book-service/books/{self.book.id}/", data, format="json")
+        response = self.client.put(
+            f"/api/book-service/books/{self.book.id}/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.book.refresh_from_db()
         self.assertEqual(self.book.inventory, 10)
 
     def test_delete_book(self):
         """Test deleting a book via the API"""
-        response = self.client.delete(f"/api/book-service/books/{self.book.id}/")
+        response = self.client.delete(
+            f"/api/book-service/books/{self.book.id}/"
+        )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Book.objects.filter(id=self.book.id).exists())
