@@ -25,7 +25,7 @@ jobs:
           pip install poetry
 
       - name: Install Dependencies
-        run: poetry install
+        run: poetry install --with dev
 
       - name: Run Ruff
         run: ruff check --output-format=github .
