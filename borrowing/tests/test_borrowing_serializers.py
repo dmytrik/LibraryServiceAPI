@@ -118,6 +118,7 @@ class BorrowingSerializerTest(APITestCase):
                 "cover": "SOFT",
                 "inventory": self.book.inventory,
                 "daily_fee": "1.00",
+                "unreturned_borrowings_count": 1
             },
         }
         self.assertEqual(serializer.data, expected_data)
