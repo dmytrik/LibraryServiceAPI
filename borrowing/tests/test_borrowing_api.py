@@ -23,7 +23,7 @@ class BorrowingViewSetTest(APITestCase):
             "expected_return_date": (now().date() + timedelta(days=7)),
             "book": self.book.title,
         }
-        url = reverse("borrowings:borrowings-list")
+        url = reverse("borrowing:borrowings-list")
         response = self.client.post(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Borrowing.objects.count(), 1)
@@ -38,7 +38,7 @@ class BorrowingViewSetTest(APITestCase):
             "expected_return_date": (now().date() + timedelta(days=7)),
             "book": self.book.title,
         }
-        url = reverse("borrowings:borrowings-list")
+        url = reverse("borrowing:borrowings-list")
         response = self.client.post(url, data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -50,7 +50,7 @@ class BorrowingViewSetTest(APITestCase):
             book=self.book,
             user=self.user,
         )
-        url = reverse("borrowings:borrowings-list")
+        url = reverse("borrowing:borrowings-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -64,7 +64,7 @@ class BorrowingViewSetTest(APITestCase):
             book=self.book,
             user=self.user,
         )
-        url = reverse("borrowings:borrowings-list")
+        url = reverse("borrowing:borrowings-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -101,6 +101,6 @@ class BorrowingViewSetTest(APITestCase):
     def test_permission_denied_for_non_authenticated_user(self):
         """Test that non-authenticated users are denied access."""
         self.client.logout()
-        url = reverse("borrowings:borrowings-list")
+        url = reverse("borrowing:borrowings-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
