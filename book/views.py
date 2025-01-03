@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 
 from book.models import Book
+from book.permissions import IsAdminOrReadOnly
 from book.serializers import BookSerializer
 
 
@@ -13,3 +14,4 @@ class BookViewSet(viewsets.ModelViewSet):
 
     queryset = Book.objects.prefetch_related("borrowings")
     serializer_class = BookSerializer
+    permission_classes = [IsAdminOrReadOnly,]
