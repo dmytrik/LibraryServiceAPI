@@ -31,4 +31,4 @@ class Payment(models.Model):
         ordering = ["-borrowing__borrow_date"]
 
     def __str__(self):
-        return f"{self.user.email} - {self.money_to_pay} USD - {self.status}"
+        return f"{self.borrowing.user.email} - {self.money_to_pay} USD - {self.status}"

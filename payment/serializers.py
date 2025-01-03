@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
 from payment.models import Payment
-from borrowing.serializers import BorrowingListSerializer
+from borrowing.serializers import (
+    BorrowingListSerializer,
+    BorrowingDetailSerializer
+)
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -21,4 +24,8 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class PaymentListSerializer(PaymentSerializer):
-    borrowing = BorrowingListSerializer
+    borrowing = BorrowingListSerializer()
+
+
+class PaymentDetailSerializer(PaymentListSerializer):
+    borrowing = BorrowingDetailSerializer()
