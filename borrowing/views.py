@@ -27,15 +27,15 @@ class BorrowingViewSet(
     Viewset for borrowing related objects.
     Provides actions: list, create, retrieve.
     """
-    queryset = Borrowing.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_class = CustomFilter
 
     def get_queryset(self):
+        queryset = Borrowing.objects.select_related("book", "user")
         if self.request.user.is_staff:
-            return Borrowing.objects.all().order_by("actual_return_date")
-        return Borrowing.objects.filter(user=self.request.user).order_by("actual_return_date")
+            return queryset.order_by("actual_return_date")
+        return queryset.filter(user=self.request.user).order_by("actual_return_date")
 
     def get_serializer_class(self):
         if self.action == "list":
