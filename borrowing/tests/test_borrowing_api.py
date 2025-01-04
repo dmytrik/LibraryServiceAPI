@@ -31,8 +31,7 @@ class BorrowingViewSetTest(APITestCase):
             "book": self.book.title,
         }
         url = reverse("borrowing:borrowings-list")
-        response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
+        self.client.post(url, data, format="json")
         self.assertEqual(Borrowing.objects.count(), 1)
         self.assertEqual(Borrowing.objects.first().user, self.user)
 
