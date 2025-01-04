@@ -10,11 +10,18 @@ from borrowing.models import Borrowing
 
 User = get_user_model()
 
+
 class BorrowingViewSetTest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(email="test@user.com", password="password123")
-        self.staff_user = User.objects.create_user(email="test@admin.com", password="adminpassword", is_staff=True)
-        self.book = Book.objects.create(title="Test Book", author="Author", inventory=5, daily_fee=1)
+        self.user = User.objects.create_user(
+            email="test@user.com", password="password123"
+        )
+        self.staff_user = User.objects.create_user(
+            email="test@admin.com", password="adminpassword", is_staff=True
+        )
+        self.book = Book.objects.create(
+            title="Test Book", author="Author", inventory=5, daily_fee=1
+        )
         self.client.force_authenticate(user=self.user)
 
     def test_create_borrowing(self):
@@ -96,7 +103,9 @@ class BorrowingViewSetTest(APITestCase):
         )
         response = self.client.post(f"/api/borrowings/{borrowing.id}/return/")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data[0], "This borrowing has already been returned.")
+        self.assertEqual(
+            response.data[0], "This borrowing has already been returned."
+        )
 
     def test_permission_denied_for_non_authenticated_user(self):
         """Test that non-authenticated users are denied access."""

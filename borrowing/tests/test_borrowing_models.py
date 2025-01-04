@@ -6,17 +6,14 @@ from borrowing.models import Borrowing, Book
 
 User = get_user_model()
 
+
 class BorrowingModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="test@user.com",
-            password="password123"
+            email="test@user.com", password="password123"
         )
         self.book = Book.objects.create(
-            title="Test Book",
-            author="Test Author",
-            inventory=1,
-            daily_fee=1
+            title="Test Book", author="Test Author", inventory=1, daily_fee=1
         )
         self.expected_return_date = now().date() + timedelta(days=7)
         self.borrowing = Borrowing.objects.create(
@@ -31,7 +28,9 @@ class BorrowingModelTest(TestCase):
         borrowing = Borrowing.objects.first()
         self.assertEqual(borrowing.user, self.user)
         self.assertEqual(borrowing.book, self.book)
-        self.assertEqual(borrowing.expected_return_date, self.expected_return_date)
+        self.assertEqual(
+            borrowing.expected_return_date, self.expected_return_date
+        )
         self.assertIsNone(borrowing.actual_return_date)
         self.assertEqual(borrowing.borrow_date, now().date())
 

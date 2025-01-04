@@ -21,14 +21,10 @@ User = get_user_model()
 class BorrowingSerializerTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="test@user.com",
-            password="password123"
+            email="test@user.com", password="password123"
         )
         self.book = Book.objects.create(
-            title="Test Book",
-            author="Test Author",
-            inventory=1,
-            daily_fee=1.0
+            title="Test Book", author="Test Author", inventory=1, daily_fee=1.0
         )
         self.context = {"request": self.client}
         self.client.force_authenticate(user=self.user)
@@ -43,7 +39,9 @@ class BorrowingSerializerTest(APITestCase):
         mock_request = MagicMock()
         mock_request.user = self.user
 
-        serializer = BorrowingSerializer(data=data, context={"request": mock_request})
+        serializer = BorrowingSerializer(
+            data=data, context={"request": mock_request}
+        )
         self.assertTrue(serializer.is_valid())
 
     def test_borrowing_serializer_validation_with_active_borrowings(self):
@@ -61,7 +59,9 @@ class BorrowingSerializerTest(APITestCase):
         mock_request = MagicMock()
         mock_request.user = self.user
 
-        serializer = BorrowingSerializer(data=data, context={"request": mock_request})
+        serializer = BorrowingSerializer(
+            data=data, context={"request": mock_request}
+        )
 
         with self.assertRaises(ValidationError):
             serializer.is_valid(raise_exception=True)
@@ -118,7 +118,7 @@ class BorrowingSerializerTest(APITestCase):
                 "cover": "SOFT",
                 "inventory": self.book.inventory,
                 "daily_fee": "1.00",
-                "unreturned_borrowings_count": 1
+                "unreturned_borrowings_count": 1,
             },
         }
         self.assertEqual(serializer.data, expected_data)

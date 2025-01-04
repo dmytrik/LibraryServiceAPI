@@ -28,7 +28,9 @@ class UserManagerTests(TestCase):
 
     def test_create_user_without_email(self):
         with self.assertRaises(ValueError):
-            get_user_model().objects.create_user(email=None, password=self.password)
+            get_user_model().objects.create_user(
+                email=None, password=self.password
+            )
 
     def test_create_user_with_invalid_email(self):
         invalid_email = "invalid_email"
@@ -50,7 +52,9 @@ class UserManagerTests(TestCase):
             )
 
     def test_user_email_uniqueness(self):
-        get_user_model().objects.create_user(email=self.email, password=self.password)
+        get_user_model().objects.create_user(
+            email=self.email, password=self.password
+        )
         with self.assertRaises(IntegrityError):
             get_user_model().objects.create_user(
                 email=self.email, password="newpassword123"

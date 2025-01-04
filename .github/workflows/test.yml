@@ -37,5 +37,7 @@ jobs:
         env:
           SECRET_KEY: "j+(#!sag4%^ay+oanu&t-&3x@2$!+s%x4u!4%pser4o9)2!ua1"
           ENVIRONMENT: "local"
+          STRIPE_SECRET_KEY: "fail"
+          STRIPE_PUBLIC_KEY: "fail"
         timeout-minutes: 5
         run: poetry run python manage.py test
