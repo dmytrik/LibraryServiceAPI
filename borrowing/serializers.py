@@ -17,7 +17,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Borrowing
-        fields = ["id", "borrow_date", "expected_return_date", "book"]
+        fields = ["id", "expected_return_date", "book"]
 
     def validate(self, attrs):
         user = self.context["request"].user

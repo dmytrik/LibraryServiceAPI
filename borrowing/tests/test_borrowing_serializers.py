@@ -86,6 +86,7 @@ class BorrowingSerializerTest(APITestCase):
             "borrow_date": str(borrowing.borrow_date),
             "expected_return_date": str(borrowing.expected_return_date),
             "book": self.book.title,
+            "payments": []
         }
         self.assertEqual(serializer.data, expected_data)
 

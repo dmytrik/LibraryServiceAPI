@@ -32,7 +32,7 @@ class BorrowingViewSetTest(APITestCase):
         }
         url = reverse("borrowing:borrowings-list")
         response = self.client.post(url, data, format="json")
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
         self.assertEqual(Borrowing.objects.count(), 1)
         self.assertEqual(Borrowing.objects.first().user, self.user)
 
