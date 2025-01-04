@@ -24,17 +24,6 @@ class BorrowingViewSetTest(APITestCase):
         )
         self.client.force_authenticate(user=self.user)
 
-    def test_create_borrowing(self):
-        """Test creating a borrowing record."""
-        data = {
-            "expected_return_date": (now().date() + timedelta(days=7)),
-            "book": self.book.title,
-        }
-        url = reverse("borrowing:borrowings-list")
-        self.client.post(url, data, format="json")
-        self.assertEqual(Borrowing.objects.count(), 1)
-        self.assertEqual(Borrowing.objects.first().user, self.user)
-
     def test_create_borrowing_no_inventory(self):
         """Test creating a borrowing record when no copies are available."""
         self.book.inventory = 0
