@@ -19,6 +19,7 @@ class BorrowingSerializer(serializers.ModelSerializer):
         model = Borrowing
         fields = [
             "id",
+            "borrow_date",
             "expected_return_date",
             "book"
         ]

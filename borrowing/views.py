@@ -20,6 +20,7 @@ from payment.models import Payment
 from payment.service import create_stripe_session
 
 
+
 class BorrowingViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -50,8 +51,15 @@ class BorrowingViewSet(
 
         return BorrowingSerializer
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         book = serializer.validated_data["book"]
+
+        expected_return_date = serializer.validated_data["expected_return_date"]
+
+        if datetime.date.today() > expected_return_date:
+            raise ValidationError("No valid expected return date")
 
         if book.inventory <= 0:
             raise ValidationError("No copies available in inventory.")
@@ -59,7 +67,13 @@ class BorrowingViewSet(
         book.inventory -= 1
         book.save()
 
-        serializer.save(user=self.request.user)
+        borrowing = serializer.save(user=self.request.user)
+
+        create_stripe_session(borrowing, request)
+
+        payment = Payment.objects.get(borrowing=borrowing)
+
+        return HttpResponseRedirect(payment.session_url, status=status.HTTP_302_FOUND)
 
     @action(
         methods=["POST"],
@@ -85,8 +99,11 @@ class BorrowingViewSet(
             book.inventory += 1
             book.save()
 
-            create_stripe_session(borrowing, request)
+            response = create_stripe_session(borrowing, request)
 
-            payment = Payment.objects.get(borrowing=borrowing)
+            if response:
+                return HttpResponseRedirect("/api/borrowings/", status=status.HTTP_302_FOUND)
+
+            payment = Payment.objects.filter(type="FINE", borrowing=borrowing)[0]
 
             return HttpResponseRedirect(payment.session_url, status=status.HTTP_302_FOUND)

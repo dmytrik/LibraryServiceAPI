@@ -88,6 +88,18 @@ class PaymentListCreateView(
 
 
 class PaymentSuccessView(APIView):
+    """
+    View for handling successful payment responses from Stripe.
+
+    This view processes the successful payment callback from Stripe, updates the
+    payment status to 'PAID', and returns the payment details including the
+    amount paid and the currency.
+
+    Methods:
+        get: Handles the GET request for successful payment. Updates the payment status
+             and returns the payment details.
+    """
+
     def get(self, request, *args, **kwargs):
 
         try:
@@ -115,6 +127,19 @@ class PaymentSuccessView(APIView):
 
 
 class PaymentCancelView(APIView):
+    """
+    View for handling cancelled payment responses from Stripe.
+
+    This view processes the cancelled payment callback from Stripe, updates the
+    payment status to 'PENDING', and provides a link to the Stripe session
+    for the user to retry the payment.
+
+    Methods:
+        get: Handles the GET request for a cancelled payment. Updates the payment
+             status and returns a message indicating cancellation and a link for
+             retrying the payment.
+    """
+
     def get(self, request, *args, **kwargs):
         try:
             payment_id = request.query_params.get("payment_id")
