@@ -1,5 +1,12 @@
+from django.conf import settings
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
+
+import stripe
 
 from payment.models import Payment
 from payment.serializers import (
@@ -7,6 +14,9 @@ from payment.serializers import (
     PaymentListSerializer,
     PaymentDetailSerializer,
 )
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class PaymentListCreateView(
@@ -75,3 +85,57 @@ class PaymentListCreateView(
         if self.action == "retrieve":
             return PaymentDetailSerializer
         return PaymentSerializer
+
+
+class PaymentSuccessView(APIView):
+    def get(self, request, *args, **kwargs):
+
+        try:
+            payment_id = request.query_params.get("payment_id")
+            payment = get_object_or_404(Payment, id=int(payment_id))
+            session = stripe.checkout.Session.retrieve(payment.session_id)
+
+            if payment.status != "PAID":
+                payment.status = "PAID"
+                payment.save()
+
+            return Response(
+                {
+                    "message": "Payment successful",
+                    "amount_paid": session.amount_total / 100,
+                    "currency": session.currency,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except stripe.error.StripeError as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class PaymentCancelView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            payment_id = request.query_params.get("payment_id")
+            payment = get_object_or_404(Payment, id=int(payment_id))
+            session = stripe.checkout.Session.retrieve(payment.session_id)
+
+            if payment.status != "PENDING":
+                payment.status = "PENDING"
+                payment.save()
+
+            return Response(
+                {
+                    "message": "Payment was cancelled.You can pay the rent within 24 hours",
+                    "pay": session.url,
+                    "amount_paid": session.amount_total / 100,
+                    "currency": session.currency,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        except stripe.error.StripeError as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+            )

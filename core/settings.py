@@ -155,6 +155,10 @@ INTERNAL_IPS = [
     "127.0.0.1",
 ]
 
+#Stripe
+STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
+STRIPE_PUBLIC_KEY = os.environ["STRIPE_PUBLIC_KEY"]
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 

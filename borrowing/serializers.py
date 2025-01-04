@@ -3,6 +3,7 @@ from rest_framework import serializers
 from book.models import Book
 from book.serializers import BookSerializer
 from borrowing.models import Borrowing
+from payment.models import Payment
 
 
 class BorrowingSerializer(serializers.ModelSerializer):
@@ -48,6 +49,19 @@ class BorrowingReturnBookSerializer(serializers.ModelSerializer):
         fields = ["return_book"]
 
 
+class PaymentInfoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Payment
+        fields = (
+            "id",
+            "status",
+            "type",
+            "money_to_pay",
+        )
+        read_only_fields = fields
+
+
 class BorrowingListSerializer(serializers.ModelSerializer):
     """
     Borrowing Serializer for borrowing list.
@@ -55,6 +69,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
     book = serializers.SlugRelatedField(
         many=False, read_only=True, slug_field="title"
     )
+    payments = PaymentInfoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Borrowing
@@ -64,6 +79,7 @@ class BorrowingListSerializer(serializers.ModelSerializer):
             "expected_return_date",
             "actual_return_date",
             "book",
+            "payments"
         ]
 
     def to_representation(self, instance):
