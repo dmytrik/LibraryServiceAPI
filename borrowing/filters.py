@@ -7,7 +7,10 @@ class CustomFilter(filters.FilterSet):
     """
     FilterSet for CustomFilter
     """
-    is_active = filters.BooleanFilter(method="filter_is_active", label="Active")
+
+    is_active = filters.BooleanFilter(
+        method="filter_is_active", label="Active"
+    )
     user_id = filters.NumberFilter(method="filter_user_id")
 
     class Meta:

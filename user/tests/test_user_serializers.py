@@ -26,7 +26,10 @@ class UserSerializerTest(APITestCase):
         user = get_user_model().objects.create_user(
             email="existinguser@example.com", password="oldpassword"
         )
-        new_data = {"email": "newemail@example.com", "password": "newpassword123"}
+        new_data = {
+            "email": "newemail@example.com",
+            "password": "newpassword123",
+        }
 
         serializer = UserSerializer(user, data=new_data, partial=True)
         self.assertTrue(serializer.is_valid())

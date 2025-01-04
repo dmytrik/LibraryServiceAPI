@@ -5,6 +5,7 @@ from book.models import Book
 
 User = get_user_model()
 
+
 class BookViewSetTest(APITestCase):
     def setUp(self):
         """Set up test data before running tests"""
@@ -18,14 +19,12 @@ class BookViewSetTest(APITestCase):
 
         # Create a superuser using the custom user model
         self.superuser = User.objects.create_superuser(
-            email="admin@example.com",
-            password="admin123"
+            email="admin@example.com", password="admin123"
         )
 
         # Create a regular user using the custom user model
         self.user = User.objects.create_user(
-            email="user@example.com",
-            password="user123"
+            email="user@example.com", password="user123"
         )
 
     def test_list_books_unauthenticated(self):
@@ -76,7 +75,9 @@ class BookViewSetTest(APITestCase):
             "cover": self.book.cover,
             "daily_fee": self.book.daily_fee,
         }
-        response = self.client.put(f"/api/books/{self.book.id}/", data, format="json")
+        response = self.client.put(
+            f"/api/books/{self.book.id}/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.book.refresh_from_db()
         self.assertEqual(self.book.inventory, 10)
@@ -91,7 +92,9 @@ class BookViewSetTest(APITestCase):
             "cover": self.book.cover,
             "daily_fee": self.book.daily_fee,
         }
-        response = self.client.put(f"/api/books/{self.book.id}/", data, format="json")
+        response = self.client.put(
+            f"/api/books/{self.book.id}/", data, format="json"
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_book_as_superuser(self):

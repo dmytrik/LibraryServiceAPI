@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -42,20 +43,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # additional
     "rest_framework",
     "rest_framework_simplejwt",
     "drf_spectacular",
     "django_filters",
     "debug_toolbar",
-
     # custom apps
     "book",
     "user",
     "borrowing",
     "payment",
-    "tg_bot"
+    "tg_bot",
 ]
 
 MIDDLEWARE = [
@@ -154,6 +153,10 @@ AUTH_PASSWORD_VALIDATORS = [
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+# Stripe
+STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
+STRIPE_PUBLIC_KEY = os.environ["STRIPE_PUBLIC_KEY"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
