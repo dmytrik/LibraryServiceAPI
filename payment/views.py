@@ -101,7 +101,6 @@ class PaymentSuccessView(APIView):
     """
 
     def get(self, request, *args, **kwargs):
-
         try:
             payment_id = request.query_params.get("payment_id")
             payment = get_object_or_404(Payment, id=int(payment_id))

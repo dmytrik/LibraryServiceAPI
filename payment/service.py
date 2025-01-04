@@ -36,7 +36,6 @@ def calculate_money_to_pay(borrowing: Borrowing):
             ("PAYMENT" for normal payments, "FINE" for fines, "ok" for no charge).
     """
     if not borrowing.actual_return_date:
-
         if borrowing.expected_return_date == borrowing.borrow_date:
             result = (borrowing.book.daily_fee, "PAYMENT")
             return result
@@ -60,25 +59,26 @@ def calculate_money_to_pay(borrowing: Borrowing):
     result = (0, "ok")
     return result
 
+
 def create_stripe_session(borrowing: Borrowing, request):
     """
-        Creates a Stripe checkout session for the given borrowing.
+    Creates a Stripe checkout session for the given borrowing.
 
-        This function calculates the money to pay for the borrowing using the
-        `calculate_money_to_pay` function. If a payment or fine is applicable, it
-        creates a new `Payment` object, initializes a Stripe checkout session,
-        and returns the URL for the user to complete the payment.
+    This function calculates the money to pay for the borrowing using the
+    `calculate_money_to_pay` function. If a payment or fine is applicable, it
+    creates a new `Payment` object, initializes a Stripe checkout session,
+    and returns the URL for the user to complete the payment.
 
-        Args:
-            borrowing (Borrowing): The borrowing object containing
-            details of the book and payment information.
-            request (HttpRequest): The HTTP request object, used
-            to build absolute URLs for success and cancel URLs.
+    Args:
+        borrowing (Borrowing): The borrowing object containing
+        details of the book and payment information.
+        request (HttpRequest): The HTTP request object, used
+        to build absolute URLs for success and cancel URLs.
 
-        Returns:
-            str: A URL where the user can complete the payment via Stripe,
-            or "ok" if no payment is required.
-        """
+    Returns:
+        str: A URL where the user can complete the payment via Stripe,
+        or "ok" if no payment is required.
+    """
     money_to_pay, _type = calculate_money_to_pay(borrowing)
     if _type == "ok":
         return _type
