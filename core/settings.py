@@ -185,11 +185,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Celery settings
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+if os.environ.get("ENVIRONMENT") == "local":
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+else:
+    CELERY_BROKER_URL = "redis://redis:6379/0"
+    CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 CELERY_BEAT_SCHEDULE = {
     "send_message_daily": {
