@@ -24,7 +24,9 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.packages]
-packages = ["libraryapiservice"]
+packages = [
+    { include = "libraryapiservice" }
+]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
