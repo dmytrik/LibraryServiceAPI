@@ -19,6 +19,7 @@ django-debug-toolbar = "^4.4.6"
 stripe = "^11.4.1"
 celery = {extras = ["redis"], version = "^5.4.0"}
 python-telegram-bot = "^21.10"
+django-celery-beat = "^2.7.0"
 
 [build-system]
 requires = ["poetry-core"]
