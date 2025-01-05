@@ -14,6 +14,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "django_filters",
     "debug_toolbar",
+    "django_celery_beat",
     # custom apps
     "book",
     "user",
@@ -189,3 +191,9 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 CELERY_TIMEZONE = "Europe/Kiev"
 
+CELERY_BEAT_SCHEDULE = {
+    "send_message_daily": {
+        "task": "borrowing.tasks.send_message",
+        "schedule": crontab(minute="*"),
+    },
+}
