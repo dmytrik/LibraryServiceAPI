@@ -113,9 +113,7 @@ class BorrowingViewSet(
                     "/api/borrowings/", status=status.HTTP_302_FOUND
                 )
 
-            payment = Payment.objects.filter(type="FINE", borrowing=borrowing)[
-                0
-            ]
+            payment = Payment.objects.filter(type="FINE", borrowing=borrowing)[0]
 
             return HttpResponseRedirect(
                 payment.session_url, status=status.HTTP_302_FOUND

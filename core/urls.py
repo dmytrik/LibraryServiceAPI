@@ -26,7 +26,7 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/user/", include("user.urls", namespace="user")),
+    path("api/users/", include("user.urls", namespace="user")),
     path("api/borrowings/", include("borrowing.urls", namespace="borrowing")),
     path("api/payments/", include("payment.urls", namespace="payment")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

@@ -8,6 +8,23 @@ from borrowing.models import Borrowing
 
 @shared_task
 def send_message():
+    """
+    Celery task to send reminders for overdue borrowings.
+
+    This task checks for borrowings that are overdue (expected return date has passed)
+    and have not yet been returned. For each overdue borrowing, it sends a Telegram
+    notification to remind the user.
+
+    The notification includes details such as the user's name, book title, borrow date,
+    and the number of days the borrowing is overdue.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
     today = datetime.date.today()
     overdue_borrowings = Borrowing.objects.filter(
         expected_return_date__lte=today,
