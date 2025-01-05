@@ -17,6 +17,7 @@ djangorestframework-simplejwt = "^5.3.1"
 django-filter = "^24.3"
 django-debug-toolbar = "^4.4.6"
 stripe = "^11.4.1"
+celery = {extras = ["redis"], version = "^5.4.0"}
 
 [build-system]
 requires = ["poetry-core"]
