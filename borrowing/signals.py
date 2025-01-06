@@ -1,4 +1,5 @@
-from django.db.models.signals import post_save
+from django.core.cache import cache
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import Borrowing
 from tg_bot.utils import send_telegram_notification
@@ -25,3 +26,7 @@ def handle_borrowing_creation(instance, created, **kwargs):
             f" Expected return date: {instance.expected_return_date}"
         )
         send_telegram_notification.delay(message)
+
+@receiver([post_save, post_delete], sender=Borrowing)
+def invalidate_cache(sender, instance, **kwargs):
+    cache.delete_pattern("*borrowing_view*")
