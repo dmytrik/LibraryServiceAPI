@@ -1,5 +1,7 @@
 import datetime
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.http import HttpResponseRedirect
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
@@ -118,3 +120,14 @@ class BorrowingViewSet(
             return HttpResponseRedirect(
                 payment.session_url, status=status.HTTP_302_FOUND
             )
+
+    @method_decorator(cache_page(60 * 5, key_prefix="borrowing_view"))
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Method to dispatch the request, with caching applied
+        for the crew view.
+
+        The response is cached for 5 minutes using the
+        key prefix 'borrowing_view'.
+        """
+        return super().dispatch(request, *args, **kwargs)
