@@ -17,8 +17,8 @@ class BorrowingViewSetTest(APITestCase):
         self.user = User.objects.create_user(
             email="test@user.com", password="password123"
         )
-        self.staff_user = User.objects.create_user(
-            email="test@admin.com", password="adminpassword", is_staff=True
+        self.staff_user = User.objects.create_superuser(
+            email="test@admin.com", password="adminpassword"
         )
         self.book = Book.objects.create(
             title="Test Book", author="Author", inventory=5, daily_fee=1

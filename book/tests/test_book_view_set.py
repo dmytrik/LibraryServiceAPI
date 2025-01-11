@@ -18,12 +18,10 @@ class BookViewSetTest(APITestCase):
             daily_fee=10.00,
         )
 
-        # Create a superuser using the custom user model
         self.superuser = User.objects.create_superuser(
             email="admin@example.com", password="admin123"
         )
 
-        # Create a regular user using the custom user model
         self.user = User.objects.create_user(
             email="user@example.com", password="user123"
         )
