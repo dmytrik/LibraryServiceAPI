@@ -52,7 +52,7 @@ def calculate_money_to_pay(borrowing: Borrowing):
             borrowing.actual_return_date - borrowing.expected_return_date
         ).days
 
-        count_of_money = overdue_days * borrowing.book.daily_fee * 2
+        count_of_money = overdue_days * borrowing.book.daily_fee * OVERDUE_COEFFICIENT
         result = (count_of_money, "FINE")
         return result
 

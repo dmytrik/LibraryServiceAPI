@@ -14,8 +14,6 @@ class Command(BaseCommand):
                 db_conn.cursor()
             except OperationalError:
                 self.stdout.write(
-                    self.style.WARNING(
-                        "waiting for connection with database..."
-                    )
+                    self.style.WARNING("waiting for connection with database...")
                 )
                 time.sleep(1)

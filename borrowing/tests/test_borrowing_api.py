@@ -1,7 +1,8 @@
+from datetime import timedelta
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from datetime import timedelta
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 

@@ -1,7 +1,7 @@
 from django.db import models
+from django.conf import settings
 
 from book.models import Book
-from django.conf import settings
 
 
 class Borrowing(models.Model):

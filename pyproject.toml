@@ -20,6 +20,7 @@ stripe = "^11.4.1"
 celery = {extras = ["redis"], version = "^5.4.0"}
 python-telegram-bot = "^21.10"
 django-celery-beat = "^2.7.0"
+black = "^24.10.0"
 
 [build-system]
 requires = ["poetry-core"]

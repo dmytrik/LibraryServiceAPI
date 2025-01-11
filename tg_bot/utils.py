@@ -1,8 +1,9 @@
+import os
 import asyncio
 
 from celery import shared_task
 from telegram import Bot
-import os
+
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
