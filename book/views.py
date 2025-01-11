@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
 
 from book.models import Book
@@ -17,3 +19,14 @@ class BookViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsAdminOrReadOnly,
     ]
+
+    @method_decorator(cache_page(60 * 5, key_prefix="book_view"))
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Method to dispatch the request, with caching applied
+        for the crew view.
+
+        The response is cached for 5 minutes using the
+        key prefix 'book_view'.
+        """
+        return super().dispatch(request, *args, **kwargs)

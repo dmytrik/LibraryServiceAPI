@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -25,6 +26,9 @@ class BookViewSetTest(APITestCase):
         self.user = User.objects.create_user(
             email="user@example.com", password="user123"
         )
+
+    def tearDown(self):
+        cache.clear()
 
     def test_list_books_unauthenticated(self):
         """Test: Unauthenticated users can view the list of books"""

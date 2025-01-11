@@ -3,6 +3,7 @@ from datetime import timedelta
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
+from django.core.cache import cache
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 
@@ -24,6 +25,9 @@ class BorrowingViewSetTest(APITestCase):
             title="Test Book", author="Author", inventory=5, daily_fee=1
         )
         self.client.force_authenticate(user=self.user)
+
+    def tearDown(self):
+        cache.clear()
 
     def test_create_borrowing_no_inventory(self):
         """Test creating a borrowing record when no copies are available."""

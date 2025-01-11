@@ -449,6 +449,24 @@ files = [
 Django = ">=4.2"
 
 [[package]]
+name = "django-redis"
+version = "5.4.0"
+description = "Full featured redis cache backend for Django."
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "django-redis-5.4.0.tar.gz", hash = "sha256:6a02abaa34b0fea8bf9b707d2c363ab6adc7409950b2db93602e6cb292818c42"},
+    {file = "django_redis-5.4.0-py3-none-any.whl", hash = "sha256:ebc88df7da810732e2af9987f7f426c96204bf89319df4c6da6ca9a2942edd5b"},
+]
+
+[package.dependencies]
+Django = ">=3.2"
+redis = ">=3,<4.0.0 || >4.0.0,<4.0.1 || >4.0.1"
+
+[package.extras]
+hiredis = ["redis[hiredis] (>=3,!=4.0.0,!=4.0.1)"]
+
+[[package]]
 name = "django-timezone-field"
 version = "7.0"
 description = "A Django app providing DB, form, and REST framework fields for zoneinfo and pytz timezone objects."
@@ -1278,4 +1296,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12.8"
-content-hash = "69a73d6114eb26a58b71bb620fc0ef83a465aa3000c7d961b99c078cacbc199d"
+content-hash = "cf76f316f3d584a044f37f837aae84a63a98b3dbfbcf8862cdbc1ce05fc8c616"
