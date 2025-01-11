@@ -9,9 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
+from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,16 +44,24 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # additional
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "drf_spectacular",
+    "django_filters",
+    "debug_toolbar",
+    "django_celery_beat",
     # custom apps
     "book",
     "user",
     "borrowing",
     "payment",
-    "tg_bot"
+    "tg_bot",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -82,14 +93,67 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if os.environ.get("ENVIRONMENT") == "local":
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
     }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://redis:6379/0',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
+
+if os.environ.get("ENVIRONMENT") == "local":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB", "library"),
+            "USER": os.environ.get("POSTGRES_USER", "library"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "library"),
+            "HOST": os.environ.get("POSTGRES_HOST", "db"),
+            "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        }
+    }
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
 }
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": False,
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZE",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "LibraryApiService",
+    "DESCRIPTION": "Management system for book borrowings",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -109,6 +173,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+# Stripe
+STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
+STRIPE_PUBLIC_KEY = os.environ["STRIPE_PUBLIC_KEY"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -121,6 +192,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+AUTH_USER_MODEL = "user.User"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -131,3 +203,24 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Celery settings
+
+if os.environ.get("ENVIRONMENT") == "local":
+    CELERY_BROKER_URL = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+else:
+    CELERY_BROKER_URL = "redis://redis:6379/0"
+    CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Kiev"
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+CELERY_BEAT_SCHEDULE = {
+    "send_message_daily": {
+        "task": "borrowing.tasks.send_message",
+        "schedule": crontab(minute="*"),
+    },
+}
