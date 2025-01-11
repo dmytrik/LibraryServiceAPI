@@ -24,6 +24,7 @@ from drf_spectacular.views import (
 )
 from debug_toolbar.toolbar import debug_toolbar_urls
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("user.urls", namespace="user")),

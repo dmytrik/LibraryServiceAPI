@@ -11,23 +11,23 @@ class CustomFilter(filters.FilterSet):
     is_active = filters.BooleanFilter(
         method="filter_is_active", label="Active"
     )
-    user_id = filters.NumberFilter(method="filter_user_id")
+    user_id = filters.NumberFilter(method="filter_by_user_id")
 
     class Meta:
         model = Borrowing
         fields = ["is_active", "user_id"]
 
-    def filter_is_active(self, queryset, name, value):
-        if value:
+    def filter_is_active(self, queryset, value):
+        if value is True:
             return queryset.filter(actual_return_date__isnull=True)
-        else:
+        elif value is False:
             return queryset.filter(actual_return_date__isnull=False)
+        return queryset
 
-    def filter_user_id(self, queryset, name, value):
-        request = self.request
-        if request.user.is_staff:
+    def filter_by_user_id(self, queryset, value):
+        if self.request.user.is_staff:
             if value:
                 return queryset.filter(user_id=value)
             return queryset
-        else:
-            return queryset.filter(user=request.user)
+
+        return queryset.filter(user=self.request.user)

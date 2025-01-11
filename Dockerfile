@@ -11,9 +11,6 @@ RUN adduser \
     --disabled-password \
     --gecos "" \
     --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
     appuser
 
 RUN pip install --no-cache-dir poetry

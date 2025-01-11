@@ -1,5 +1,6 @@
 import datetime
 
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.http import HttpResponseRedirect
@@ -38,7 +39,10 @@ class BorrowingViewSet(
     filterset_class = CustomFilter
 
     def get_queryset(self):
-        queryset = Borrowing.objects.select_related("book", "user")
+        queryset = (
+            Borrowing.objects.select_related("book", "user").
+            prefetch_related("payments")
+        )
         if self.request.user.is_staff:
             return queryset.order_by("actual_return_date")
         return queryset.filter(user=self.request.user).order_by(
@@ -58,30 +62,31 @@ class BorrowingViewSet(
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        book = serializer.validated_data["book"]
+        with transaction.atomic():
+            book = serializer.validated_data["book"]
 
-        expected_return_date = serializer.validated_data[
-            "expected_return_date"
-        ]
+            expected_return_date = serializer.validated_data[
+                "expected_return_date"
+            ]
 
-        if datetime.date.today() > expected_return_date:
-            raise ValidationError("No valid expected return date")
+            if datetime.date.today() > expected_return_date:
+                raise ValidationError("No valid expected return date")
 
-        if book.inventory <= 0:
-            raise ValidationError("No copies available in inventory.")
+            if book.inventory <= 0:
+                raise ValidationError("No copies available in inventory.")
 
-        book.inventory -= 1
-        book.save()
+            book.inventory -= 1
+            book.save()
 
-        borrowing = serializer.save(user=self.request.user)
+            borrowing = serializer.save(user=self.request.user)
 
-        create_stripe_session(borrowing, request)
+            create_stripe_session(borrowing, request)
 
-        payment = Payment.objects.get(borrowing=borrowing)
+            payment = Payment.objects.get(borrowing=borrowing)
 
-        return HttpResponseRedirect(
-            payment.session_url, status=status.HTTP_302_FOUND
-        )
+            return HttpResponseRedirect(
+                payment.session_url, status=status.HTTP_302_FOUND
+            )
 
     @action(
         methods=["POST"],
@@ -101,7 +106,7 @@ class BorrowingViewSet(
                     "This borrowing has already been returned."
                 )
 
-            borrowing.actual_return_date = datetime.date.today()
+            borrowing.actual_return_date = timezone.now().date()
             borrowing.save()
 
             book = borrowing.book

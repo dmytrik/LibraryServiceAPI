@@ -1,8 +1,8 @@
 import datetime
 
 from celery import shared_task
-from tg_bot.utils import send_telegram_notification
 
+from tg_bot.utils import send_telegram_notification
 from borrowing.models import Borrowing
 
 

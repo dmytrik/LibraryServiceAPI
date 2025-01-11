@@ -1,3 +1,4 @@
+import stripe
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins
@@ -5,8 +6,14 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-
-import stripe
+from stripe import (
+    CardError,
+    RateLimitError,
+    InvalidRequestError,
+    AuthenticationError,
+    APIConnectionError,
+    StripeError
+)
 
 from payment.models import Payment
 from payment.serializers import (
@@ -99,11 +106,19 @@ class PaymentSuccessView(APIView):
         get: Handles the GET request for successful payment. Updates the payment status
              and returns the payment details.
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         try:
             payment_id = request.query_params.get("payment_id")
-            payment = get_object_or_404(Payment, id=int(payment_id))
+            if not payment_id:
+                return Response(
+                    {"error": "Payment ID is required."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            payment = get_object_or_404(
+                Payment.objects.filter(borrowing__user=request.user), id=int(payment_id)
+            )
             session = stripe.checkout.Session.retrieve(payment.session_id)
 
             if payment.status != "PAID":
@@ -118,10 +133,64 @@ class PaymentSuccessView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-
-        except stripe.error.StripeError as e:
+        except CardError:
             return Response(
-                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Your card has been declined. "
+                             "Please check your card details or use a different card."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except RateLimitError:
+            return Response(
+
+                {
+                    "error": "Payment failed due to high request traffic. "
+                             "Please try again later."
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+        except InvalidRequestError:
+            return Response(
+
+                {
+                    "error": "There was an issue with the payment details. "
+                             "Please verify the information and try again."
+                },
+
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except AuthenticationError:
+            return Response(
+                {
+                    "error": "Authentication with the payment gateway failed. "
+                             "Please contact support."
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        except APIConnectionError:
+            return Response(
+                {
+                    "error": "A network error occurred. "
+                             "Please check your internet connection and try again."
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        except StripeError:
+            return Response(
+                {
+                    "error": "An error occurred with the payment process. "
+                             "Please try again or contact support."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception:
+            return Response(
+                {
+                    "error": "An unexpected error occurred. "
+                             "Please try again or contact support."
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -138,11 +207,19 @@ class PaymentCancelView(APIView):
              status and returns a message indicating cancellation and a link for
              retrying the payment.
     """
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         try:
             payment_id = request.query_params.get("payment_id")
-            payment = get_object_or_404(Payment, id=int(payment_id))
+            if not payment_id:
+                return Response(
+                    {"error": "Payment ID is required."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            payment = get_object_or_404(
+                Payment.objects.filter(borrowing__user=request.user), id=int(payment_id)
+            )
             session = stripe.checkout.Session.retrieve(payment.session_id)
 
             if payment.status != "PENDING":
@@ -158,8 +235,62 @@ class PaymentCancelView(APIView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        except stripe.error.StripeError as e:
+        except CardError:
             return Response(
-                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
+                {
+                    "error": "Your card has been declined. "
+                             "Please check your card details or use a different card."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except RateLimitError:
+            return Response(
+
+                {
+                    "error": "Payment failed due to high request traffic. "
+                             "Please try again later."
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS,
+            )
+        except InvalidRequestError:
+            return Response(
+
+                {
+                    "error": "There was an issue with the payment details. "
+                             "Please verify the information and try again."
+                },
+
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except AuthenticationError:
+            return Response(
+                {
+                    "error": "Authentication with the payment gateway failed. "
+                             "Please contact support."
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        except APIConnectionError:
+            return Response(
+                {
+                    "error": "A network error occurred. "
+                             "Please check your internet connection and try again."
+                },
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        except StripeError:
+            return Response(
+                {
+                    "error": "An error occurred with the payment process. "
+                             "Please try again or contact support."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception:
+            return Response(
+                {
+                    "error": "An unexpected error occurred. "
+                             "Please try again or contact support."
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

@@ -1,8 +1,9 @@
+from datetime import timedelta
+
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from django.core.cache import cache
-from datetime import timedelta
 from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 
@@ -17,8 +18,8 @@ class BorrowingViewSetTest(APITestCase):
         self.user = User.objects.create_user(
             email="test@user.com", password="password123"
         )
-        self.staff_user = User.objects.create_user(
-            email="test@admin.com", password="adminpassword", is_staff=True
+        self.staff_user = User.objects.create_superuser(
+            email="test@admin.com", password="adminpassword"
         )
         self.book = Book.objects.create(
             title="Test Book", author="Author", inventory=5, daily_fee=1

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from rest_framework import status
 from rest_framework.test import APITestCase
+
 from book.models import Book
 
 User = get_user_model()
@@ -18,12 +19,10 @@ class BookViewSetTest(APITestCase):
             daily_fee=10.00,
         )
 
-        # Create a superuser using the custom user model
         self.superuser = User.objects.create_superuser(
             email="admin@example.com", password="admin123"
         )
 
-        # Create a regular user using the custom user model
         self.user = User.objects.create_user(
             email="user@example.com", password="user123"
         )
@@ -79,9 +78,7 @@ class BookViewSetTest(APITestCase):
             "cover": self.book.cover,
             "daily_fee": self.book.daily_fee,
         }
-        response = self.client.put(
-            f"/api/books/{self.book.id}/", data, format="json"
-        )
+        response = self.client.put(f"/api/books/{self.book.id}/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.book.refresh_from_db()
         self.assertEqual(self.book.inventory, 10)
@@ -96,9 +93,7 @@ class BookViewSetTest(APITestCase):
             "cover": self.book.cover,
             "daily_fee": self.book.daily_fee,
         }
-        response = self.client.put(
-            f"/api/books/{self.book.id}/", data, format="json"
-        )
+        response = self.client.put(f"/api/books/{self.book.id}/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_book_as_superuser(self):

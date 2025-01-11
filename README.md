@@ -44,7 +44,7 @@ git clone https://github.com/dmytrik/LibraryServiceAPI.git
 cd LibraryServiceAPI
 ```
 
-### 2. 📄 Create a `.env` File
+### 2. 📄 Environment
 Create a `.env` file based on the `.env.sample` file. You can do this by copying the `.env.sample` to `.env`:
 
 ```bash
