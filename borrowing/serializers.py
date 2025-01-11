@@ -27,8 +27,9 @@ class BorrowingSerializer(serializers.ModelSerializer):
 
         if active_borrowings.exists():
             raise serializers.ValidationError(
-                "You already have an active borrowing. "
-                "Please return the current book before borrowing another."
+                "It looks like you already have a book borrowed."
+                " Please return it before borrowing another."
+                " Thank you for your understanding!"
             )
         return attrs
 
