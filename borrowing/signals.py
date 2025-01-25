@@ -30,4 +30,5 @@ def handle_borrowing_creation(instance, created, **kwargs):
 
 @receiver([post_save, post_delete], sender=Borrowing)
 def invalidate_cache(sender, instance, **kwargs):
+    cache.delete_pattern("*book_view*")
     cache.delete_pattern("*borrowing_view*")

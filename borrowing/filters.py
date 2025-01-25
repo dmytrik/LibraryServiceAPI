@@ -17,12 +17,8 @@ class CustomFilter(filters.FilterSet):
         model = Borrowing
         fields = ["is_active", "user_id"]
 
-    def filter_is_active(self, queryset, value):
-        if value is True:
-            return queryset.filter(actual_return_date__isnull=True)
-        elif value is False:
-            return queryset.filter(actual_return_date__isnull=False)
-        return queryset
+    def filter_is_active(self, queryset, filter_name, value):
+        return queryset.filter(actual_return_date__isnull=value)
 
     def filter_by_user_id(self, queryset, value):
         if self.request.user.is_staff:
