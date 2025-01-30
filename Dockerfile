@@ -10,7 +10,7 @@ ARG UID=10001
 RUN adduser \
     --disabled-password \
     --gecos "" \
-    --home "/nonexistent" \
+    --home "/app" \
     appuser
 
 RUN pip install --no-cache-dir poetry
