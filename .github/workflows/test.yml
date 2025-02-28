@@ -3,12 +3,19 @@ name: Test
 on:
   pull_request:
     branches:
-      - "master"
+      - "develop"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    services:
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
 
     steps:
       - name: Checkout repo
@@ -25,11 +32,19 @@ jobs:
           pip install poetry
 
       - name: Install Dependencies
-        run: poetry install
+        run: poetry install --no-root
 
       - name: Run Ruff
-        run: ruff check --output-format=github .
+        run: poetry run ruff check --output-format=github .
+
+      - name: make
+        run: poetry run ruff check --output-format=github .
 
       - name: Run Tests
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
         timeout-minutes: 5
         run: poetry run python manage.py test
